@@ -26,7 +26,8 @@ public class Test {
 
 		Session sesion = null;
 		Transaction tx = null;
-		consulta(sesion,tx);
+		consulta(sesion, tx);
+		consultaInmuebles(sesion, tx);
 
 	}
 
@@ -43,21 +44,18 @@ public class Test {
 			Root<Imagen> root = criteria.from(Imagen.class);
 
 			Join<Imagen, Inmueble> join = root.join(Imagen_.inmuebles);
-			// Consulto todas las imagenes del inmueble 1
-			//criteria.where(builder.equal(join.get(Inmueble_.idInmueble), 6));
-			
-			//Consulta con un like en ejemplo (Hace lo mismo pero ahora trae las imagenes que estan asociadas al inmueble 5 pero con la plabra asociada a la url)
-			criteria.where(
-				builder.and(
-					builder.equal(join.get(Inmueble_.idInmueble), 5) , 
-					builder.like(root.get(Imagen_.url), "%drive%")
-				)
-			);
+			// Consulto todas las imagenes del inmueble 6
+			// criteria.where(builder.equal(join.get(Inmueble_.idInmueble), 6));
+
+			// Consulta con un like en ejemplo (Hace lo mismo pero ahora trae las imagenes
+			// que estan asociadas al inmueble 5 pero con la plabra asociada a la url)
+			criteria.where(builder.and(builder.equal(join.get(Inmueble_.idInmueble), 5),
+					builder.like(root.get(Imagen_.url), "%drive%")));
 
 			List<Imagen> results = sesion.createQuery(criteria).getResultList();
 			System.out.println("Resultados: " + results.toString());
 			System.out.println("Resultados int: " + results.size());
-			
+
 		} catch (Exception e) {
 			System.out.println("Exception: " + e.getMessage());
 			sesion.getTransaction().rollback();
@@ -68,6 +66,46 @@ public class Test {
 			}
 		}
 
+	}
+
+	// Consulta Inmuebles asociados a imagenes, por lo tanto el elemento root de la
+	// consulta por criteria cambia a inmueble
+	public static void consultaInmuebles(Session sesion, Transaction tx) {
+		try {
+			sesion = HibernateUtil.getSessionFactory().openSession();
+			tx = sesion.beginTransaction();
+			CriteriaBuilder builder = sesion.getCriteriaBuilder();
+			CriteriaQuery<Inmueble> criteria = builder.createQuery(Inmueble.class);
+
+			// Definir el tipo de entidad que retorna la consulta
+			Root<Inmueble> root = criteria.from(Inmueble.class);
+
+			Join<Inmueble, Imagen> join = root.join(Inmueble_.imagenes);
+
+			// Realizamos una consulta por criteria para consultar todos los inmuebles
+			// asociados a la imagen 7
+			// criteria.where(
+			// builder.and(
+			// builder.equal(join.get(Imagen_.idImagen), 7)
+			// )
+			// );
+
+			criteria.where(builder.and(builder.equal(join.get(Imagen_.idImagen), 7),
+					builder.like(root.get(Inmueble_.tipo), "%terreno%")));
+
+			List<Inmueble> results = sesion.createQuery(criteria).getResultList();
+			System.out.println("Resultados: " + results.toString());
+			System.out.println("Resultados int: " + results.size());
+
+		} catch (Exception e) {
+			System.out.println("Exception: " + e.getMessage());
+			sesion.getTransaction().rollback();
+			sesion.close();
+		} finally {
+			if (sesion != null) {
+				sesion.close();
+			}
+		}
 	}
 
 	public static void configurar(Session sesion, Transaction tx) {
