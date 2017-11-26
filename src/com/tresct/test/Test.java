@@ -48,11 +48,11 @@ public class Test {
 			
 			//Consulta con un like en ejemplo (Hace lo mismo pero ahora trae las imagenes que estan asociadas al inmueble 5 pero con la plabra asociada a la url)
 			criteria.where(
-						builder.and(
-								builder.equal(join.get(Inmueble_.idInmueble), 5) , 
-								builder.like(root.get(Imagen_.url), "%drive%")
-								)
-					);
+				builder.and(
+					builder.equal(join.get(Inmueble_.idInmueble), 5) , 
+					builder.like(root.get(Imagen_.url), "%drive%")
+				)
+			);
 
 			List<Imagen> results = sesion.createQuery(criteria).getResultList();
 			System.out.println("Resultados: " + results.toString());
