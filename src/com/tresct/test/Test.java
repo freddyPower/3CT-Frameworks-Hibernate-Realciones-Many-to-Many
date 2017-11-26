@@ -26,8 +26,13 @@ public class Test {
 
 		Session sesion = null;
 		Transaction tx = null;
-		consulta(sesion, tx);
-		consultaInmuebles(sesion, tx);
+		//configurar(sesion,tx);
+		//consulta(sesion, tx);
+		//consultaInmuebles(sesion, tx);
+		// actualizar(sesion,tx);
+		//eliminarRelacion(sesion, tx);
+		//eliminarRelacionCascada(sesion,tx);
+		eliminarRelacionTotal(sesion,tx);
 
 	}
 
@@ -107,6 +112,125 @@ public class Test {
 			}
 		}
 	}
+
+	// Este metodo ejemplifica la actualizacion de registros asociados por
+	// ManyToMany
+	public static void actualizar(Session sesion, Transaction tx) {
+		try {
+			sesion = HibernateUtil.getSessionFactory().openSession();
+			tx = sesion.beginTransaction();
+
+			// Ejemplo: Actualizar imagen7 del inmueble 5
+			Inmueble inmueble5 = sesion.load(Inmueble.class, 5);
+			Imagen imagen7 = sesion.load(Imagen.class, 7);
+
+			// Primero la elimino de la lista de imagenes
+			inmueble5.getImagenes().remove(imagen7);
+			imagen7.setUrl("www.nuevoACTUALIZA");
+			inmueble5.getImagenes().add(imagen7);
+			sesion.save(inmueble5);
+			tx.commit();
+
+		} catch (Exception e) {
+			System.out.println("Exception: " + e.getMessage());
+			sesion.getTransaction().rollback();
+			sesion.close();
+		} finally {
+			if (sesion != null) {
+				sesion.close();
+			}
+		}
+	}
+
+	// Metodo que demuestra la forma de realizar una eliminacion de una relacion
+	// (Eliminar un registro de la tabla intermedia)
+	public static void eliminarRelacion(Session sesion, Transaction tx) {
+		try {
+			sesion = HibernateUtil.getSessionFactory().openSession();
+			tx = sesion.beginTransaction();
+
+			// Ejemplo: Eliminar imagen7 del Inmueble5
+			Inmueble inmueble5 = sesion.load(Inmueble.class, 5);
+			Imagen imagen7 = sesion.load(Imagen.class, 7);
+
+			inmueble5.getImagenes().remove(imagen7);
+
+			sesion.save(inmueble5);
+			tx.commit();
+
+		} catch (Exception e) {
+			System.out.println("Exception: " + e.getMessage());
+			sesion.getTransaction().rollback();
+			sesion.close();
+		} finally {
+			if (sesion != null) {
+				sesion.close();
+			}
+		}
+	}
+
+	// Metodo que demuestra la forma de eliminar todas las imagenes pertenecientes a un inmueble
+	// (Eliminar un registro de la tabla intermedia)
+	public static void eliminarRelacionCascada(Session sesion, Transaction tx) {
+		try {
+			sesion = HibernateUtil.getSessionFactory().openSession();
+			tx = sesion.beginTransaction();
+			CriteriaBuilder builder = sesion.getCriteriaBuilder();
+			CriteriaQuery<Imagen> criteria = builder.createQuery(Imagen.class);
+
+			// Definir el tipo de entidad que retorna la consulta
+			Root<Imagen> root = criteria.from(Imagen.class);
+			Join<Imagen, Inmueble> join = root.join(Imagen_.inmuebles);
+			
+			// Ejemplo: Eliminar todas las imagenes pertenecientes al inmueble7
+			criteria.where(builder.equal(join.get(Inmueble_.idInmueble), 7));
+
+			List<Imagen> listaImagenesEliminar = sesion.createQuery(criteria).getResultList();
+			Inmueble inmueble7 = sesion.load(Inmueble.class, 7);
+			
+			for(Imagen imagen: listaImagenesEliminar) {
+				inmueble7.getImagenes().remove(imagen);
+			}
+			sesion.save(inmueble7);
+			tx.commit();
+
+		} catch (Exception e) {
+			System.out.println("Exception: " + e.getMessage());
+			sesion.getTransaction().rollback();
+			sesion.close();
+		} finally {
+			if (sesion != null) {
+				sesion.close();
+			}
+		}
+	}
+	
+	// Metodo que demuestra la forma de eliminar todas las imagenes y todos los inmuebles
+		
+		public static void eliminarRelacionTotal(Session sesion, Transaction tx) {
+			try {
+				sesion = HibernateUtil.getSessionFactory().openSession();
+				tx = sesion.beginTransaction();
+				
+				Inmueble inmueble9 = sesion.load(Inmueble.class, 9);
+				Imagen imagen13 = sesion.load(Imagen.class, 13);
+				
+				//Esto elimina todas las imagenes del inmueble9 junto con el inmueble9 ;) ojo, esto es inusual
+				inmueble9.getImagenes().remove(imagen13);
+				
+				sesion.delete(inmueble9);
+				tx.commit();
+
+			} catch (Exception e) {
+				System.out.println("Exception: " + e.getMessage());
+				sesion.getTransaction().rollback();
+				sesion.close();
+			} finally {
+				if (sesion != null) {
+					sesion.close();
+				}
+			}
+		}
 
 	public static void configurar(Session sesion, Transaction tx) {
 		try {
