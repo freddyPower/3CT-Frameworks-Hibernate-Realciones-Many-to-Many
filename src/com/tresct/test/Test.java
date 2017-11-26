@@ -44,7 +44,15 @@ public class Test {
 
 			Join<Imagen, Inmueble> join = root.join(Imagen_.inmuebles);
 			// Consulto todas las imagenes del inmueble 1
-			criteria.where(builder.equal(join.get(Inmueble_.idInmueble), 6));
+			//criteria.where(builder.equal(join.get(Inmueble_.idInmueble), 6));
+			
+			//Consulta con un like en ejemplo (Hace lo mismo pero ahora trae las imagenes que estan asociadas al inmueble 5 pero con la plabra asociada a la url)
+			criteria.where(
+						builder.and(
+								builder.equal(join.get(Inmueble_.idInmueble), 5) , 
+								builder.like(root.get(Imagen_.url), "%drive%")
+								)
+					);
 
 			List<Imagen> results = sesion.createQuery(criteria).getResultList();
 			System.out.println("Resultados: " + results.toString());
