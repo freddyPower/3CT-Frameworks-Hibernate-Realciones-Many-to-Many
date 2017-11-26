@@ -74,9 +74,7 @@ public class Inmueble {
 
 	@Override
 	public String toString() {
-		return "Inmueble [idInmueble=" + idInmueble + ", tipo=" + tipo + ", domicilio=" + domicilio + ", imagenes="
-				+ imagenes + "]";
+		return "Inmueble [idInmueble=" + idInmueble + ", tipo=" + tipo + ", domicilio=" + domicilio + "]";
 	}
-	
-	
+
 }

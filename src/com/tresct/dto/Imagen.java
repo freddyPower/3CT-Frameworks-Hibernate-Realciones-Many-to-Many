@@ -21,7 +21,7 @@ public class Imagen {
 	private String url;
 	private Timestamp fecha;
 	
-	@ManyToMany(mappedBy="")
+	@ManyToMany(mappedBy="imagenes")
 	private List<Inmueble> inmuebles = new ArrayList<>();
 	
 	
@@ -68,7 +68,7 @@ public class Imagen {
 
 	@Override
 	public String toString() {
-		return "Imagen [idImagen=" + idImagen + ", url=" + url + ", fecha=" + fecha + ", inmuebles=" + inmuebles + "]";
+		return "Imagen [idImagen=" + idImagen + ", url=" + url + ", fecha=" + fecha ;
 	}
 	
 	
